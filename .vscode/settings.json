@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./nicepages_backend/db_configuration",
+        "./nicepages_backend/token"
+    ]
+}
