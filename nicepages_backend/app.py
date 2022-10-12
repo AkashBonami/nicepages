@@ -71,52 +71,52 @@ class Update:
     @classmethod
     def on_post(cls,req,resp):
         request=req.media
-        uname=request.get("uname")
         email=request.get("email")
-        password=encoder(request.get("password"))
+        password=request.get("password")
         try:
+            with open("credentials.json",'r+',encoding="utf-8") as file:
+                read=json.load(file)
+                uid=read.get('uid')
             cnx = mysql.connector.connect(**config)
             cursor = cnx.cursor()
-            query1 = f"SELECT UID from users where uname = \'{uname}\';"
-            cursor.execute(query1)
-            uid = cursor.fetchall()
-            uid = uid[0][0]
-            if email != "":
-                query2=f"SELECT email from users where UID = {uid};"
-                cursor.execute(query2)
-                db_email=cursor.fetchall()
-                db_email=db_email[0][0]
-                if db_email==email:
-                    pass
-                else:
-                    query3=f"UPDATE users SET email=\'{email}\' where UID = {uid};"
-                    cursor.execute(query3)
-                    credentials={"Success":"Email has changed Successfully"}
-                    json_object = json.dumps(credentials, indent=4)
+            # query = f"SELECT password from users where UID={uid};"
+            # cursor.execute(query)
+            # local_password=cursor.fetchall()
+            # query1 = f"SELECT email from users where UID={uid};"
+            # cursor.execute(query1)
+            # local_email=cursor.fetchall()
+            if email or password:
+                if email:
+                    query=f"UPDATE users SET email=\'{email}\' where UID = {uid};"
+                    cursor.execute(query)
+                    cnx.commit()
+                    print("email updated")
+                    # credentials = {"Success":"Email Updated"}
+                    # json_object = json.dumps(credentials, indent=4)
+                    # resp.text(json_object)
+                    # return resp
 
-            else:    
-                # query4=f"SELECT password from users where UID = {uid};"
-                # cursor.execute(query4)
-                # db_password=cursor.fetchall()
-                # db_password=db_password[0][0]
-                # if db_password==password:
-                #     pass
-                # else:
-                query5=f"UPDATE users SET password=\'{password}\' where UID = {uid};"
-                cursor.execute(query5)
-                credentials={"Success":"Password has changed Successfully"}
-                json_object = json.dumps(credentials, indent=4)
-
-
+                if password:
+                    password=encoder(password)
+                    query=f"UPDATE users SET password=\'{password}\' where UID = {uid};"
+                    cursor.execute(query)
+                    cnx.commit()
+                    print("password updated")
+                    # credentials = {"Success":"Password Updated"}
+                    # json_object = json.dumps(credentials, indent=4)
+                    # resp.text(json_object)
+                    # return resp
             
-
-
-
-        except Exception as es:
-            error=es
-            json_object =json.dumps(error,indent=4)
-        finally:
-            resp.text=json_object
+                # print(read.get('uid'))
+        except Exception as ex:
+            print(ex)
+            credentials = {"Error":{ex}}
+            json_object = json.dumps(credentials, indent=4)
+            resp.text(json_object)
             return resp
-            
+
+        finally:
+            cursor.close()
+            cnx.close()
+
 
