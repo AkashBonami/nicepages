@@ -13,7 +13,7 @@ class Signup:
         try:
             cluster = MongoClient("mongodb://localhost:27017/nicepages")
             db=cluster["nicepages"]
-            collection=db["nicepages"]
+            collection=db["users"]
             data = {"uname": f"{uname}", "email":f"{email}","password":f"{password}" }
             collection.insert_one(data)
             credentials = {"Success":"Your have succesfully signed up"}
@@ -35,7 +35,7 @@ class Login:
         try:
             cluster = MongoClient("mongodb://localhost:27017/nicepages")
             db=cluster["nicepages"]
-            collection=db["nicepages"]
+            collection=db["users"]
             collections=collection.find({"uname":f"{uname}"})
             for result in collections:
                 uid = result["_id"]
@@ -72,7 +72,7 @@ class Update:
                 uid = ObjectId(uid)
             cluster = MongoClient("mongodb://localhost:27017/nicepages")
             db=cluster["nicepages"]
-            collection=db["nicepages"]
+            collection=db["users"]
             
 
             if email or password:
