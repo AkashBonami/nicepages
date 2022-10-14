@@ -14,10 +14,15 @@ class Signup:
             cluster = MongoClient("mongodb://localhost:27017/nicepages")
             db=cluster["nicepages"]
             collection=db["users"]
-            data = {"uname": f"{uname}", "email":f"{email}","password":f"{password}" }
-            collection.insert_one(data)
-            credentials = {"Success":"Your have succesfully signed up"}
-            json_object = json.dumps(credentials, indent=4)
+            print(collection.find())
+            if collection.find({"uname":uname}):
+                credentials={"Error":"Username already Exists"}
+                json_object = json.dumps(credentials, indent=4)
+            else:    
+                data = {"uname": f"{uname}", "email":f"{email}","password":f"{password}" }
+                collection.insert_one(data)
+                credentials = {"Success":"Your have succesfully signed up"}
+                json_object = json.dumps(credentials, indent=4)
         except Exception as es:
 
             error=es
